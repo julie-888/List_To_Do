@@ -1,0 +1,61 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "To Do List";
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Is Done</th>
+            <th scope="col">Title</th>
+            <th scope="col">Data</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var toDo in Model.toDoList)
+        {
+            <tr>
+                @Html.AntiForgeryToken()
+                <td><input type="checkbox" id="@toDo.Id"/></td>
+                <td>@toDo.Title</td>
+                <td>@toDo.Date.ToShortDateString()</td>
+            </tr>
+            
+        }
+    </tbody>
+
+</table>
+<a href="/CreateToDo"
+   class="btn btn-primary btn-lg active"
+   role="button" aria-pressed="true">Добавить</a>
+
+   @section Scripts{
+       <script>
+           $('input:checkbox').on('change', function () {
+               console.log(this)
+               let params = {
+                   'Id': $(this).attr('id'),
+                   'IsDone': $(this).prop('checked')
+
+               }
+               console.log(params)
+               $.ajax({
+                   type: 'post',
+                   url: '?handler=IsDone',
+                   beforeSend: function (xhr) {
+                   xhr.setRequestHeader("XSRF-TOKEN",
+                        $('input:hidden[name="__RequestVerificationToken"]').val());
+                   },
+                   data: JSON.stringify(params),
+                   success: function(){
+                   console.log('successful')
+                   }, 
+                   error: function(){ }
+               })
+           })
+       
+       </script>
+   }
+
+
